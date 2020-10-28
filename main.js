@@ -17,7 +17,7 @@ app.engine('hbs', handlebars({ defaultLayout: 'default.hbs'}));
 app.set('view engine', 'hbs');
 app.set('views', __dirname + '/views');
 
-/*
+/* The query string that we use to get information
 http://api.giphy.com/v1/gifs/search?q=ryan+gosling&api_key=YOUR_API_KEY&limit=10&rating=g&lang=en
 */
 
@@ -48,21 +48,29 @@ app.get('/search', async (req, res, next) => {
         gifsReturned = await result.json();
     } catch (error) {
         console.error('Error: ', error);
-        res.status(400).type('text/html');
+        res.status(500).type('text/html');
         res.send('<H1>An error occurred at the server!</H1>');
         return Promise.reject(error);
     }
 
-    console.info('gifsReturned: \n', gifsReturned);
-    console.info('image url: ', gifsReturned.data[0].images.url);
+    // info logs to debug the program
+    // console.info('gifsReturned: \n', gifsReturned);
+    // console.info('image from data[0] url: ', gifsReturned.data[0].images.fixed_height.url);
+
+    // create the array of image urls to pass to our handlebars template
+    let imgUrls = [];
+    gifsReturned.data.forEach( element => {
+        imgUrls.push(element.images.fixed_height.url);
+    });
+    console.info('array created: ', imgUrls);
 
     res.status(200).type('text/html');
-    res.send('<H1>Well done!</H1>');
+    res.render('search', { title: `Your search of ${search} returned`, imgUrl: imgUrls });
 });
 
 app.get('/', (req, res, next) => {
     res.status(200).type('text/html');
-    res.render('index', { title: "Welcome to the modified Giphy!" });
+    res.render('index', { title: "Welcome to the new Giphy!" });
 });
 
 app.use(express.static(__dirname + '/public'));
