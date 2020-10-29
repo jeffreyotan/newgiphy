@@ -1,5 +1,12 @@
 <div class='container'>
-    {{#each imgUrl}}
-        <p><img src={{this}} alt="giphy pic"></p>
-    {{/each}}
+    {{#if hasContent}}
+        {{#each imgUrl}}
+            <div>
+                <h5>{{this.title}}</h5>
+                <img src={{this.link}} alt="giphy pic">
+            </div>
+        {{/each}}
+    {{else}}
+        <h3>No results were found!</h3>
+    {{/if}}
 </div>

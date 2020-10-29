@@ -60,12 +60,23 @@ app.get('/search', async (req, res, next) => {
     // create the array of image urls to pass to our handlebars template
     let imgUrls = [];
     gifsReturned.data.forEach( element => {
-        imgUrls.push(element.images.fixed_height.url);
+        const title = element['title'];
+        const link = element.images.fixed_height.url;
+        imgUrls.push({ title, link }); // in JavaScript, when the JSON object does not have any value, the key and value are the same. Hence, {title, link} === {title: title, link: link};
     });
     console.info('array created: ', imgUrls);
 
+    // alternatively, we can use the following array map function
+    // const imgUrls = gifsReturned.data
+    // .filter( (element) => {
+    //     return !element.title.includes('f**k');
+    // })
+    // .map( (element) => {
+    //     return { title: element.title, link: element.images.fixed_height.url };
+    // });
+
     res.status(200).type('text/html');
-    res.render('search', { title: `Your search of ${search} returned`, imgUrl: imgUrls });
+    res.render('search', { title: `Your search of ${search} returned`, imgUrl: imgUrls, hasContent: !!imgUrls.length });
 });
 
 app.get('/', (req, res, next) => {
